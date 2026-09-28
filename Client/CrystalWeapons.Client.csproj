@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>CrystalWeapons.Client</AssemblyName>
+    <RootNamespace>CrystalWeapons</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GamePath>/game</GamePath>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <OutputPath>../Crystal Weapons Client Build/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MelonLoader"><HintPath>$(GamePath)/MelonLoader/net35/MelonLoader.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(GamePath)/MelonLoader/net35/0Harmony.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Root.Township"><HintPath>$(GamePath)/A Township Tale_Data/Managed/Root.Township.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Alta.Values"><HintPath>$(GamePath)/A Township Tale_Data/Managed/Alta.Values.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(GamePath)/A Township Tale_Data/Managed/UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core.cs" />
+    <Compile Include="CrystalClientAppearancePatch.cs" />
+    <Compile Include="../Source/CrystalForgeConfig.cs" Link="Shared/CrystalForgeConfig.cs" />
+    <Compile Include="../Source/CrystalMaterialRegistration.cs" Link="Shared/CrystalMaterialRegistration.cs" />
+    <Compile Include="../Source/CrystalAppearancePolicy.cs" Link="Shared/CrystalAppearancePolicy.cs" />
+  </ItemGroup>
+</Project>

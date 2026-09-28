@@ -1,0 +1,12 @@
+# Build intermediates and debug symbols
+**/bin/
+**/obj/
+*.pdb
+
+# Design notes and agent workflow data
+docs/
+**/docs/
+.superpowers/
+**/.superpowers/
+superpowers/
+**/superpowers/
