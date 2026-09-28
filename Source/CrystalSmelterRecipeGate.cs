@@ -30,10 +30,12 @@ internal static class CrystalSmelterRecipeGate
     {
         var crystalEntries = input.Where(entry => entry.Key != null && entry.Key.Hash == CrystalMouldRecipeRegistration.CrystalGemBlueItemHash).ToArray();
         if (crystalEntries.Length == 0) return true;
+        var copperEntries = input.Where(entry => entry.Key != null && entry.Key.Hash == CrystalMouldRecipeRegistration.CopperIngotItemHash).ToArray();
 
-        if (input.Count != 1 || crystalEntries.Length != 1 || crystalEntries[0].Value <= 0)
+        if (input.Count != 2 || crystalEntries.Length != 1 || copperEntries.Length != 1
+            || crystalEntries[0].Value <= 0 || copperEntries[0].Value <= 0)
         {
-            Reject(ref requiredFuel, ref __result, "Crystal Gem Blue was mixed with other inputs or had an invalid count.");
+            Reject(ref requiredFuel, ref __result, "Crystal Gem Blue and Copper Ingot must be the only smelter inputs, with positive counts.");
             return false;
         }
 
@@ -48,9 +50,11 @@ internal static class CrystalSmelterRecipeGate
             return false;
         }
 
-        if (crystalEntries[0].Value < target.Cost)
+        if (crystalEntries[0].Value < target.Cost || copperEntries[0].Value < target.Cost)
         {
-            Reject(ref requiredFuel, ref __result, "Crystal Gem Blue count " + crystalEntries[0].Value + " is below mould cost " + target.Cost + ".");
+            Reject(ref requiredFuel, ref __result,
+                "Input counts are below mould cost " + target.Cost + " each (Copper Ingot=" + copperEntries[0].Value
+                + ", Crystal Gem Blue=" + crystalEntries[0].Value + ").");
             return false;
         }
 
@@ -60,12 +64,11 @@ internal static class CrystalSmelterRecipeGate
             return false;
         }
 
-        // Every Crystal recipe has the same item input, so the native matcher
-        // would select the first matching mould product in its recipe list.
         // Select this mould's exact recipe and invoke the game's normal dock
-        // consumption routine with only its required Crystal cost.
+        // consumption routine with the required Copper and Crystal counts.
         var requiredInputs = new Dictionary<Item, int>
         {
+            [copperEntries[0].Key] = target.Cost,
             [crystalEntries[0].Key] = target.Cost
         };
         try
@@ -76,7 +79,7 @@ internal static class CrystalSmelterRecipeGate
         {
             requiredFuel = 0f;
             __result = null;
-            Core.Logger.Error("Crystal mould recipe " + target.RecipeHash + " could not consume its required Crystal input: " + exception);
+            Core.Logger.Error("Crystal mould recipe " + target.RecipeHash + " could not consume its required Copper and Crystal inputs: " + exception);
             return false;
         }
 

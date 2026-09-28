@@ -13,6 +13,8 @@ public static class CrystalMouldRecipeRegistration
 {
     public const uint CrystalGemBlueItemHash = 45754u;
     private const string CrystalGemBlueName = "Crystal Gem Blue";
+    public const uint CopperIngotItemHash = 5802u;
+    private const string CopperIngotName = "Copper Ingot";
     private const uint RecipeHashOffset = 0x43570000u;
     private const uint RecipeHashMultiplier = 0x9E3779B1u;
     private const string RecipeNamePrefix = "Crystal Mould ";
@@ -39,11 +41,19 @@ public static class CrystalMouldRecipeRegistration
             throw new InvalidOperationException("Could not resolve Crystal Gem Blue item hash " + CrystalGemBlueItemHash + " with its expected name.");
         }
 
+        var copperIngot = Item.All.FirstOrDefault(item => item.Hash == CopperIngotItemHash);
+        if (copperIngot == null || !string.Equals(copperIngot.name, CopperIngotName, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException("Could not resolve Copper Ingot item hash " + CopperIngotItemHash + " with its expected name.");
+        }
+
         var template = SmeltingRecipe.All.FirstOrDefault(recipe =>
-            ReadItemCounts(recipe, "input").Length == 1 && ReadItemCounts(recipe, "output").Length == 1);
+                ReadItemCounts(recipe, "input").Length == 2 && ReadItemCounts(recipe, "output").Length == 1)
+            ?? SmeltingRecipe.All.FirstOrDefault(recipe =>
+                ReadItemCounts(recipe, "input").Length == 1 && ReadItemCounts(recipe, "output").Length == 1);
         if (template == null)
         {
-            throw new InvalidOperationException("No vanilla one-input/one-output SmeltingRecipe template is available.");
+            throw new InvalidOperationException("No vanilla smelting recipe template with one output is available.");
         }
 
         var recipeRegistry = GetRecipeRegistry();
@@ -95,7 +105,7 @@ public static class CrystalMouldRecipeRegistration
 
             try
             {
-                var recipe = CreateRecipe(template, definition, product, cost, outputQuantity, crystalGemBlue, recipeHash);
+                var recipe = CreateRecipe(template, definition, product, cost, outputQuantity, copperIngot, crystalGemBlue, recipeHash);
                 recipeRegistry.Add(recipe.Hash, recipe);
                 AddRecipeToAllSmelterUpgradeSets(recipe);
                 var target = new CrystalMouldTarget(definition, product, cost, outputQuantity, recipe);
@@ -103,7 +113,7 @@ public static class CrystalMouldRecipeRegistration
                 TargetsByRecipeHash.Add(recipe.Hash, target);
                 registeredTargets.Add(target);
                 Core.Logger.Msg("Registered Crystal mould product " + product.name + "(" + product.Hash + "): mould="
-                    + definition.Hash + ", Crystal Gem Blue cost=" + cost + ", output=" + outputQuantity
+                    + definition.Hash + ", Copper Ingot cost=" + cost + ", Crystal Gem Blue cost=" + cost + ", output=" + outputQuantity
                     + ", recipe=" + recipe.Hash + ".");
             }
             catch (Exception exception)
@@ -114,6 +124,7 @@ public static class CrystalMouldRecipeRegistration
 
         if (registeredTargets.Count > 0)
         {
+            CrystalSmelterInputFilter.Allow(copperIngot);
             CrystalSmelterInputFilter.Allow(crystalGemBlue);
         }
 
@@ -149,6 +160,7 @@ public static class CrystalMouldRecipeRegistration
         Item product,
         int cost,
         int outputQuantity,
+        Item copperIngot,
         Item crystalGemBlue,
         uint recipeHash)
     {
@@ -156,13 +168,31 @@ public static class CrystalMouldRecipeRegistration
         recipe.name = RecipeNamePrefix + product.name + " " + definition.Hash;
         AssignStableHash(recipe, recipeHash, recipe.name);
 
-        var inputs = ReadItemCounts(recipe, "input");
+        var inputs = EnsureTwoInputs(recipe);
         var outputs = ReadItemCounts(recipe, "output");
-        SetItem(inputs[0], crystalGemBlue);
+        SetItem(inputs[0], copperIngot);
         SetCount(inputs[0], cost);
+        SetItem(inputs[1], crystalGemBlue);
+        SetCount(inputs[1], cost);
         SetItem(outputs[0], product);
         SetCount(outputs[0], outputQuantity);
         return recipe;
+    }
+
+    private static ItemCount[] EnsureTwoInputs(SmeltingRecipe recipe)
+    {
+        var inputs = ReadItemCounts(recipe, "input");
+        if (inputs.Length == 2) return inputs;
+        if (inputs.Length != 1)
+        {
+            throw new InvalidOperationException("Smelting recipe template must have one or two inputs; found " + inputs.Length + ".");
+        }
+
+        var expandedInputs = new[] { inputs[0], new ItemCount() };
+        var inputField = typeof(SmeltingRecipe).GetField("input", BindingFlags.Instance | BindingFlags.NonPublic)
+            ?? throw new MissingFieldException(typeof(SmeltingRecipe).FullName, "input");
+        inputField.SetValue(recipe, expandedInputs);
+        return expandedInputs;
     }
 
     private static uint GetRecipeHash(uint mouldHash)

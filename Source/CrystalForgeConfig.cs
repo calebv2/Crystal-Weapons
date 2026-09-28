@@ -48,9 +48,9 @@ public static class CrystalForgeConfig
             var identifier = fieldName + "Override";
             FloatEntries.Add(identifier, category.CreateEntry<float>(
                 identifier,
-                InheritValue,
+                GetDefaultOverride(fieldName),
                 fieldName + " override",
-                "Set to -1 to inherit the Red Iron value; use a finite, nonnegative value to override."));
+                "Set to -1 to inherit the Red Iron value; use a finite, nonnegative value to override. Damage and durability default to 0.85."));
         }
 
         hardnessLevelOverride = category.CreateEntry<int>(
@@ -115,7 +115,14 @@ public static class CrystalForgeConfig
             effectiveValues.Add(fieldName + "=" + ((float)(field.GetValue(target) ?? 0f)).ToString("0.###", CultureInfo.InvariantCulture));
         }
         effectiveValues.Add("hardnessLevel=" + hardnessField.GetValue(target));
-        Core.Logger.Msg("Crystal Weapons effective Red Iron based material stats: " + string.Join(", ", effectiveValues) + ".");
+        Core.Logger.Msg("Crystal Weapons effective material stats: " + string.Join(", ", effectiveValues) + ".");
+    }
+
+    private static float GetDefaultOverride(string fieldName)
+    {
+        return fieldName == "damageMultiplier" || fieldName == "durabilityMultiplier"
+            ? 0.85f
+            : InheritValue;
     }
 
     private static FieldInfo GetMaterialField(string fieldName, Type expectedType)

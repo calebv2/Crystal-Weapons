@@ -4,7 +4,7 @@ Crystal Weapons adds Crystal Gem Blue smelting recipes for every valid forge mou
 
 ## Recipes
 
-- Crystal Gem Blue costs the same count as the mould's normal ingot cost.
+- Copper Ingot and Crystal Gem Blue each cost the mould's normal ingot count. A mould that normally costs 5 ingots requires 5 Copper Ingots and 5 Crystal Gems.
 - The recipe produces the mould product's native output quantity.
 - The output keeps its normal item identity and receives a registered Crystal physical material.
 - Crystal inputs require the corresponding registered mould. Mixed ingredients and invalid or insufficient Crystal stacks are rejected without consuming them.
@@ -14,9 +14,9 @@ Mould entries with a missing product, nonpositive cost, nonpositive output quant
 
 ## Material, appearance, and configuration
 
-The Crystal material takes gameplay stats from the physical material attached to the native Red Iron ingot; every stat defaults to that installed game's Red Iron value. Its renderer materials and material channels use the vanilla Iron template, matching the Crystal Repair Hammer appearance setup, then receive the same ice-blue tint and emission. The client companion reapplies the color after the game assigns its atlas materials and keeps the color visible during heat updates; this does not change actual item temperature.
+The Crystal material uses a damage multiplier of 0.85 and durability multiplier of 0.85, between Copper (0.7) and Iron (1.0). Other gameplay stats default to the installed game's Red Iron values. Its renderer materials and material channels use the vanilla Iron template, matching the Crystal Repair Hammer appearance setup, then receive the same ice-blue tint and emission. The client companion reapplies the color after the game assigns its atlas materials and keeps the color visible during heat updates; this does not change actual item temperature.
 
-MelonLoader creates a `CrystalWeapons` preferences category displayed as **Crystal Weapons**. Each gameplay override uses the matching game field name plus `Override`. Set a float override to `-1` to inherit Red Iron, or to a finite nonnegative number to replace it. `hardnessLevelOverride` uses the same `-1` inherit value and accepts nonnegative integers. The supplied `CrystalWeapons.example.cfg` contains only this mod's settings and uses the Red Iron defaults. When upgrading from an older release, rename the preferences section to `[CrystalWeapons]` so existing custom overrides carry over.
+MelonLoader creates a `CrystalWeapons` preferences category displayed as **Crystal Weapons**. Each gameplay override uses the matching game field name plus `Override`. The damage and durability overrides default to `0.85`; other float overrides default to `-1` to inherit Red Iron. All float overrides accept finite nonnegative values. `hardnessLevelOverride` uses the same `-1` inherit value and accepts nonnegative integers. The supplied `CrystalWeapons.example.cfg` contains only this mod's settings. When upgrading from an older release, rename the preferences section to `[CrystalWeapons]` so existing custom overrides carry over.
 
 Configurable fields:
 
