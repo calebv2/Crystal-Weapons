@@ -8,7 +8,7 @@ namespace CrystalWeapons;
 
 public static class CrystalForgeConfig
 {
-    private const string CategoryName = "CrystalWeapons2";
+    private const string CategoryName = "CrystalWeapons";
     private const float InheritValue = -1f;
     private static readonly string[] FloatFieldNames =
     {

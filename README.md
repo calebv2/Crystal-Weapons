@@ -16,7 +16,7 @@ Mould entries with a missing product, nonpositive cost, nonpositive output quant
 
 The Crystal material takes gameplay stats from the physical material attached to the native Red Iron ingot; every stat defaults to that installed game's Red Iron value. Its renderer materials and material channels use the vanilla Iron template, matching the Crystal Repair Hammer appearance setup, then receive the same ice-blue tint and emission. The client companion reapplies the color after the game assigns its atlas materials and keeps the color visible during heat updates; this does not change actual item temperature.
 
-MelonLoader creates a `CrystalWeapons2` preferences category. Each gameplay override uses the matching game field name plus `Override`. Set a float override to `-1` to inherit Red Iron, or to a finite nonnegative number to replace it. `hardnessLevelOverride` uses the same `-1` inherit value and accepts nonnegative integers. The supplied `CrystalWeapons2.example.cfg` contains only this mod's settings and uses the Red Iron defaults.
+MelonLoader creates a `CrystalWeapons` preferences category displayed as **Crystal Weapons**. Each gameplay override uses the matching game field name plus `Override`. Set a float override to `-1` to inherit Red Iron, or to a finite nonnegative number to replace it. `hardnessLevelOverride` uses the same `-1` inherit value and accepts nonnegative integers. The supplied `CrystalWeapons.example.cfg` contains only this mod's settings and uses the Red Iron defaults. When upgrading from an older release, rename the preferences section to `[CrystalWeapons]` so existing custom overrides carry over.
 
 Configurable fields:
 
@@ -51,7 +51,7 @@ Dedicated servers use `CrystalWeapons.dll` for Crystal recipes, forge behavior, 
 
 Build the client DLL with `./build-client.sh`; the artifact is written to `Crystal Weapons Client Build/CrystalWeapons.Client.dll`. Install that client DLL in each player's client `Mods` folder. Keep `CrystalWeapons.dll` on the server and do not place both variants in the same process. The client build disables itself in batch/server runtimes.
 
-Keep matching `CrystalWeapons2` override values on the server and clients so the registered Crystal material has consistent local stats. The server remains authoritative for recipes, crafting, damage, and durability.
+Keep matching `CrystalWeapons` override values on the server and clients so the registered Crystal material has consistent local stats. The server remains authoritative for recipes, crafting, damage, and durability.
 
 ## Build
 
